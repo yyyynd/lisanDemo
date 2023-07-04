@@ -17,7 +17,7 @@ func (StudentsInfo) TableName() string {
 }
 
 func GetStuName(stuId string) (string, error) {
-	db, err := InitConnection("menghy0523", "menghy0523", "", "lisandb")
+	db, err := InitConnection(USER, PASSWD, "", "lisandb")
 	if err != nil {
 		return "", err
 	}

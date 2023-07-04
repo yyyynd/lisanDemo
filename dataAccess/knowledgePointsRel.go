@@ -20,7 +20,7 @@ func (KnowledgePointsRel) TableName() string {
 
 func GetTreeStructure() ([]*demoServer.TreeStructureRespData, error) {
 	//connect
-	db, err := InitConnection("menghy0523", "menghy0523", "", "lisandb")
+	db, err := InitConnection(USER, PASSWD, "", "lisandb")
 	if err != nil {
 		return nil, err
 	}
