@@ -24,7 +24,7 @@ func main() {
 	addr := os.Args[3]
 	//h := server.Default()
 	options := server.WithHostPorts(addr + ":8888")
-	h := server.New(options)
+	h := server.Default(options)
 	register(h)
 	h.Spin()
 }
