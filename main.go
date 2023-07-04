@@ -17,13 +17,13 @@ func main() {
 	}
 	dataAccess.USER = os.Args[1]
 	dataAccess.PASSWD = os.Args[2]
-	if len(os.Args) < 4 {
-		fmt.Println("Missing fourth addr parameter")
-		return
-	}
-	addr := os.Args[3]
+	//if len(os.Args) < 4 {
+	//	fmt.Println("Missing fourth addr parameter")
+	//	return
+	//}
+	//addr := os.Args[3]
 	//h := server.Default()
-	options := server.WithHostPorts(addr + ":8888")
+	options := server.WithHostPorts("0.0.0.0:8888")
 	h := server.Default(options)
 	register(h)
 	h.Spin()
