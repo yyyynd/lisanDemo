@@ -3,10 +3,21 @@
 package main
 
 import (
+	"demoProject/dataAccess"
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"os"
 )
 
 func main() {
+	if len(os.Args) != 3 {
+		fmt.Println("need database user and passwd, " +
+			"you may be missing parameters or passing too many parameters ")
+		return
+	}
+	dataAccess.USER = os.Args[1]
+	dataAccess.PASSWD = os.Args[2]
+
 	h := server.Default()
 
 	register(h)
