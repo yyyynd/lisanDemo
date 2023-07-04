@@ -10,16 +10,21 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 3 {
-		fmt.Println("need database user and passwd, " +
+	if len(os.Args) < 3 {
+		fmt.Println("Need database user and passwd, " +
 			"you may be missing parameters or passing too many parameters ")
 		return
 	}
 	dataAccess.USER = os.Args[1]
 	dataAccess.PASSWD = os.Args[2]
-
-	h := server.Default()
-
+	if len(os.Args) < 4 {
+		fmt.Println("Missing fourth addr parameter")
+		return
+	}
+	addr := os.Args[3]
+	//h := server.Default()
+	options := server.WithHostPorts(addr + ":8888")
+	h := server.New(options)
 	register(h)
 	h.Spin()
 }
