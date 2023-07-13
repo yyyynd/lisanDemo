@@ -6,6 +6,7 @@ import (
 	"demoProject/dataAccess"
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/hertz-contrib/cors"
 	"os"
 )
 
@@ -25,6 +26,7 @@ func main() {
 	//h := server.Default()
 	options := server.WithHostPorts("0.0.0.0:8888")
 	h := server.Default(options)
+	h.Use(cors.New(cors.Config{AllowAllOrigins: true}))
 	register(h)
 	h.Spin()
 }
