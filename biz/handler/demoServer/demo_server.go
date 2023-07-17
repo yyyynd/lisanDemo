@@ -92,3 +92,24 @@ func ExamList(ctx context.Context, c *app.RequestContext) {
 
 	c.JSON(consts.StatusOK, resp)
 }
+
+// AllStuInformation .
+// @router /allStuInfo [GET]
+func AllStuInformation(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req demoServer.AllStuInfoRes
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(demoServer.AllStuInfoResp)
+	resp.Data, err = dataAccess.GetAllStudentAccuracyInfo()
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp.Code = 0
+	c.JSON(consts.StatusOK, resp)
+}

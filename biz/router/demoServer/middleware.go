@@ -25,3 +25,8 @@ func _treestructureMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func __llstuinformationMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

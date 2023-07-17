@@ -33,6 +33,17 @@ struct StuInfoRespData {
     4: string examName;     //Temporarily abandoned
     5: list<KnowledgePointAccuracy> accuracy;
 }
+
+struct AllStuInfoRes {
+}
+
+struct AllStuInfoResp{
+    1: i32 code;
+    2: string info;
+    3: list<StuInfoRespData> data
+}
+
+
 //belong to StuInfoRespData
 struct KnowledgePointAccuracy{
     1: string kid;
@@ -57,5 +68,6 @@ struct ExamListRespData{
 service DemoServer {
     TreeStructureResp  TreeStructure (TreeStructureRes res)(api.get="/treeStructure");
     StuInfoResp StuInformation (StuInfoRes res)(api.get="/stuInformation");
+    AllStuInfoResp AllStuInformation (AllStuInfoRes res)(api.get="/allStuInfo");
     ExamListResp ExamList (ExamListRes res)(api.get="/examList");
 }

@@ -17,6 +17,7 @@ import (
 func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
+	root.GET("/allStuInfo", append(__llstuinformationMw(), demoServer.AllStuInformation)...)
 	root.GET("/examList", append(_examlistMw(), demoServer.ExamList)...)
 	root.GET("/stuInformation", append(_stuinformationMw(), demoServer.StuInformation)...)
 	root.GET("/treeStructure", append(_treestructureMw(), demoServer.TreeStructure)...)

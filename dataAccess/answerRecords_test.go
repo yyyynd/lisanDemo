@@ -22,3 +22,16 @@ func TestGetStudentAccuracyInfo(t *testing.T) {
 
 	fmt.Println(accuracy)
 }
+
+func TestGetAllStudentAccuracyInfo(t *testing.T) {
+	allAccuracy, err := GetAllStudentAccuracyInfo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for i := 0; i < len(allAccuracy); i++ {
+		fmt.Println(allAccuracy[i])
+	}
+
+	fmt.Println(len(allAccuracy))
+}

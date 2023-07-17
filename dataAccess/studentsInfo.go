@@ -16,6 +16,24 @@ func (StudentsInfo) TableName() string {
 	return "students_info"
 }
 
+func GetAllStuId() ([]string, error) {
+	db, err := InitConnection(USER, PASSWD, "", "lisandb")
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]string, 0)
+	db.Model(StudentsInfo{}).
+		Select("s_id").
+		Where("delete_mark != (?)", 1).
+		Find(&ids)
+
+	if db.Error != nil {
+		return nil, db.Error
+	}
+
+	return ids, nil
+}
+
 func GetStuName(stuId string) (string, error) {
 	db, err := InitConnection(USER, PASSWD, "", "lisandb")
 	if err != nil {

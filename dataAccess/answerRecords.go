@@ -27,7 +27,41 @@ type accuracyInfoData struct {
 	Accuracy float64
 }
 
+func GetAllStudentAccuracyInfo() ([]*demoServer.StuInfoRespData, error) {
+	ids, err := GetAllStuId()
+	if err != nil {
+		return nil, err
+	}
+
+	data := make([]*demoServer.StuInfoRespData, 0)
+	for i := 0; i < len(ids); i++ {
+		accuracyData, err := getStudentAccuracyInfo("", ids[i])
+		if err != nil {
+			return nil, err
+		}
+		stuData := new(demoServer.StuInfoRespData)
+		stuData.Accuracy = accuracyData
+		stuData.ID = ids[i]
+		name, _ := GetStuName(ids[i])
+		if err != nil {
+			return nil, err
+		}
+		stuData.Name = name
+		data = append(data, stuData)
+	}
+
+	return data, nil
+}
+
 func GetStudentAccuracyInfo(examID string, stuId string) ([]*demoServer.KnowledgePointAccuracy, error) {
+	if accuracyData, err := getStudentAccuracyInfo(examID, stuId); err != nil {
+		return nil, err
+	} else {
+		return accuracyData, nil
+	}
+}
+
+func getStudentAccuracyInfo(examID string, stuId string) ([]*demoServer.KnowledgePointAccuracy, error) {
 	db, err := InitConnection(USER, PASSWD, "", "lisandb")
 	if err != nil {
 		return nil, err
@@ -83,7 +117,6 @@ func GetStudentAccuracyInfo(examID string, stuId string) ([]*demoServer.Knowledg
 	}
 
 	//create resp body
-
 	accuracyData := make([]*demoServer.KnowledgePointAccuracy, len(accuracy))
 	for i := 0; i < len(accuracy); i++ {
 		tmp := demoServer.NewKnowledgePointAccuracy()
