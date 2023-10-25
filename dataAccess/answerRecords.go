@@ -23,8 +23,9 @@ func (AnswerRecords) TableName() string {
 }
 
 type accuracyInfoData struct {
-	KpId     string
-	Accuracy float64
+	KpId      string
+	KpContent string
+	Accuracy  float64
 }
 
 func GetAllStudentAccuracyInfo() ([]*demoServer.StuInfoRespData, error) {
@@ -81,35 +82,24 @@ func getStudentAccuracyInfo(examID string, stuId string) ([]*demoServer.Knowledg
 	//get accuracy data
 	accuracy := make([]accuracyInfoData, 0)
 	//collect each knowledge
-	subQueryA := db.Model(QuestionKnowledgePointsRel{}).
-		Select("kp_id", "COUNT(*) AS total_num").
-		Group("kp_id")
-	subQueryB := db.Model(AnswerRecords{}).
-		Select("question_knowledge_points_rel.kp_id, COUNT(*) AS correct_num").
-		Joins("INNER JOIN question_knowledge_points_rel ON answer_records.s_id = (?) AND "+
-			"answer_records.q_id = question_knowledge_points_rel.q_id", stuId).
-		Where("answer_records.is_correct = (?)", CORRECT_FLAG).
-		Group("question_knowledge_points_rel.kp_id")
-	//combine two subQuery by inner join
-	db.Table("(?) AS a", subQueryA).
-		Select("a.kp_id, b.correct_num / a.total_num AS accuracy").
-		Joins("INNER JOIN (?) AS b ON a.kp_id = b.kp_id", subQueryB).
-		Group("a.kp_id").
-		Find(&accuracy)
+	subQuery := db.Table("answer_records AS a").
+		Select("b.kp_id, SUM(IF(a.is_correct = 1, 1, 0))/COUNT(*) AS accuracy").
+		Joins("INNER JOIN question_knowledge_points_rel AS b ON a.q_id = b.q_id").
+		Where("a.s_id = (?)", stuId).
+		Group("b.kp_id")
 
-	/** SELECT g.kp_id, f.correct_num / g.total_num AS accuracy
-	FROM
-		(SELECT b.kp_id, COUNT(*) AS total_num  FROM
-		question_knowledge_points_rel AS b
-		GROUP BY b.kp_id) AS g
-	INNER JOIN
-		(SELECT d.kp_id, COUNT(*) AS correct_num
-		FROM answer_records AS c INNER JOIN question_knowledge_points_rel AS d
-		ON c.s_id = "2019213860" AND c.q_id = d.q_id
-		WHERE c.is_correct = 1
-		GROUP BY d.kp_id) AS f
-	ON g.kp_id = f.kp_id
-	GROUP BY g.kp_id;
+	db.Table("knowledge_points_info AS c").
+		Select("c.kp_id, c.kp_content, d.accuracy").
+		Joins("INNER JOIN (?) AS d ON c.kp_id = d.kp_id", subQuery).Find(&accuracy)
+
+	/**
+	SELECT c.kp_id, c.kp_content, d.accuracy
+	FROM lisandb.knowledge_points_info AS c INNER JOIN
+	(SELECT b.kp_id, SUM(IF(a.is_correct = 1, 1, 0))/COUNT(*) AS accuracy
+	FROM lisandb.answer_records AS a INNER JOIN lisandb.question_knowledge_points_rel AS b
+	ON a.q_id = b.q_id
+	WHERE a.s_id = "2019213860"
+	GROUP BY b.kp_id) AS d ON c.kp_id = d.kp_id
 	*/
 
 	if db.Error != nil {
@@ -121,6 +111,66 @@ func getStudentAccuracyInfo(examID string, stuId string) ([]*demoServer.Knowledg
 	for i := 0; i < len(accuracy); i++ {
 		tmp := demoServer.NewKnowledgePointAccuracy()
 		tmp.Kid = accuracy[i].KpId
+		tmp.KpContent = accuracy[i].KpContent
+		tmp.Accuracy = accuracy[i].Accuracy
+		accuracyData[i] = tmp
+	}
+
+	return accuracyData, nil
+}
+
+func GetClassKnowledgeAccuracyInfo(classID string) ([]*demoServer.KnowledgePointAccuracy, error) {
+	if accuracyData, err := getClassKnowledgeAccuracyInfo(classID); err != nil {
+		return nil, err
+	} else {
+		return accuracyData, nil
+	}
+}
+
+func getClassKnowledgeAccuracyInfo(classID string) ([]*demoServer.KnowledgePointAccuracy, error) {
+	db, err := InitConnection(USER, PASSWD, "", "lisandb")
+	if err != nil {
+		return nil, err
+	}
+
+	//get accuracy data
+	accuracy := make([]accuracyInfoData, 0)
+	//collect each knowledge
+
+	subQueryA := db.Table("students_info").
+		Select("s_id").
+		Where("class = (?)", classID)
+
+	subQueryB := db.Table("answer_records AS a").
+		Select("b.kp_id, SUM(IF(a.is_correct = 1, 1, 0))/COUNT(*) AS accuracy").
+		Joins("INNER JOIN question_knowledge_points_rel AS b ON a.q_id = b.q_id").
+		Where("a.s_id IN (?)", subQueryA).
+		Group("b.kp_id")
+
+	db.Table("knowledge_points_info AS c").
+		Select("c.kp_id, c.kp_content, d.accuracy").
+		Joins("INNER JOIN (?) AS d ON c.kp_id = d.kp_id", subQueryB).Find(&accuracy)
+
+	/**
+	SELECT c.kp_id, c.kp_content, d.accuracy
+	FROM lisandb.knowledge_points_info AS c INNER JOIN
+		(SELECT b.kp_id, SUM(IF(a.is_correct = 1, 1, 0))/COUNT(*) AS accuracy
+		FROM lisandb.answer_records AS a INNER JOIN lisandb.question_knowledge_points_rel AS b
+		ON a.q_id = b.q_id
+		WHERE a.s_id IN (SELECT s_id FROM lisandb.students_info WHERE class = '1')
+		GROUP BY b.kp_id) AS d ON c.kp_id = d.kp_id
+	*/
+
+	if db.Error != nil {
+		return nil, db.Error
+	}
+
+	//create resp body
+	accuracyData := make([]*demoServer.KnowledgePointAccuracy, len(accuracy))
+	for i := 0; i < len(accuracy); i++ {
+		tmp := demoServer.NewKnowledgePointAccuracy()
+		tmp.Kid = accuracy[i].KpId
+		tmp.KpContent = accuracy[i].KpContent
 		tmp.Accuracy = accuracy[i].Accuracy
 		accuracyData[i] = tmp
 	}

@@ -44,10 +44,11 @@ struct AllStuInfoResp{
 }
 
 
-//belong to StuInfoRespData
+//belong to StuInfoRespData, ClassKnowledgeAccuracyPerResp
 struct KnowledgePointAccuracy{
     1: string kid;
-    2: double accuracy;
+    2: string kpContent;
+    3: double accuracy;
 }
 
 struct ExamListRes {
@@ -65,9 +66,22 @@ struct ExamListRespData{
     2: string name;
 }
 
+// ClassKnowledgeCorrectPer
+struct ClassKnowledgeCorrectPerRes {
+    1: string classID (api.query="classID");
+}
+
+struct ClassKnowledgeAccuracyPerResp {
+    1: i32 code;
+    2: string info;
+    3: string classID;
+    4: list<KnowledgePointAccuracy> accuracy;
+}
+
 service DemoServer {
     TreeStructureResp  TreeStructure (TreeStructureRes res)(api.get="/treeStructure");
     StuInfoResp StuInformation (StuInfoRes res)(api.get="/stuInformation");
     AllStuInfoResp AllStuInformation (AllStuInfoRes res)(api.get="/allStuInfo");
     ExamListResp ExamList (ExamListRes res)(api.get="/examList");
+    ClassKnowledgeAccuracyPerResp ClassKnowledgeCorrectPer(ClassKnowledgeCorrectPerRes res)(api.get="/classKnowledgeCorrectPer")
 }

@@ -113,3 +113,28 @@ func AllStuInformation(ctx context.Context, c *app.RequestContext) {
 	resp.Code = 0
 	c.JSON(consts.StatusOK, resp)
 }
+
+// ClassKnowledgeCorrectPer .
+// @router /classKnowledgeCorrectPer [GET]
+func ClassKnowledgeCorrectPer(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req demoServer.ClassKnowledgeCorrectPerRes
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(demoServer.ClassKnowledgeAccuracyPerResp)
+	resp.ClassID = req.ClassID
+	resp.Accuracy, err = dataAccess.GetClassKnowledgeAccuracyInfo(req.GetClassID())
+	if err != nil {
+		resp.Code = 1
+		resp.Info = err.Error()
+		c.JSON(consts.StatusInternalServerError, resp)
+
+	}
+	resp.Code = 0
+	resp.Info = "success"
+	c.JSON(consts.StatusOK, resp)
+}

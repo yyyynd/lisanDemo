@@ -30,3 +30,8 @@ func __llstuinformationMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _classknowledgecorrectperMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

@@ -1677,10 +1677,11 @@ func (p *AllStuInfoResp) String() string {
 	return fmt.Sprintf("AllStuInfoResp(%+v)", *p)
 }
 
-// belong to StuInfoRespData
+// belong to StuInfoRespData, ClassKnowledgeAccuracyPerResp
 type KnowledgePointAccuracy struct {
-	Kid      string  `thrift:"kid,1" form:"kid" json:"kid" query:"kid"`
-	Accuracy float64 `thrift:"accuracy,2" form:"accuracy" json:"accuracy" query:"accuracy"`
+	Kid       string  `thrift:"kid,1" form:"kid" json:"kid" query:"kid"`
+	KpContent string  `thrift:"kpContent,2" form:"kpContent" json:"kpContent" query:"kpContent"`
+	Accuracy  float64 `thrift:"accuracy,3" form:"accuracy" json:"accuracy" query:"accuracy"`
 }
 
 func NewKnowledgePointAccuracy() *KnowledgePointAccuracy {
@@ -1691,13 +1692,18 @@ func (p *KnowledgePointAccuracy) GetKid() (v string) {
 	return p.Kid
 }
 
+func (p *KnowledgePointAccuracy) GetKpContent() (v string) {
+	return p.KpContent
+}
+
 func (p *KnowledgePointAccuracy) GetAccuracy() (v float64) {
 	return p.Accuracy
 }
 
 var fieldIDToName_KnowledgePointAccuracy = map[int16]string{
 	1: "kid",
-	2: "accuracy",
+	2: "kpContent",
+	3: "accuracy",
 }
 
 func (p *KnowledgePointAccuracy) Read(iprot thrift.TProtocol) (err error) {
@@ -1730,8 +1736,18 @@ func (p *KnowledgePointAccuracy) Read(iprot thrift.TProtocol) (err error) {
 				}
 			}
 		case 2:
-			if fieldTypeId == thrift.DOUBLE {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.DOUBLE {
+				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -1779,6 +1795,15 @@ func (p *KnowledgePointAccuracy) ReadField1(iprot thrift.TProtocol) error {
 }
 
 func (p *KnowledgePointAccuracy) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.KpContent = v
+	}
+	return nil
+}
+
+func (p *KnowledgePointAccuracy) ReadField3(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadDouble(); err != nil {
 		return err
 	} else {
@@ -1799,6 +1824,10 @@ func (p *KnowledgePointAccuracy) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField2(oprot); err != nil {
 			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField3(oprot); err != nil {
+			fieldId = 3
 			goto WriteFieldError
 		}
 
@@ -1838,10 +1867,10 @@ WriteFieldEndError:
 }
 
 func (p *KnowledgePointAccuracy) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("accuracy", thrift.DOUBLE, 2); err != nil {
+	if err = oprot.WriteFieldBegin("kpContent", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteDouble(p.Accuracy); err != nil {
+	if err := oprot.WriteString(p.KpContent); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1852,6 +1881,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *KnowledgePointAccuracy) writeField3(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("accuracy", thrift.DOUBLE, 3); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteDouble(p.Accuracy); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
 }
 
 func (p *KnowledgePointAccuracy) String() string {
@@ -2373,6 +2419,438 @@ func (p *ExamListRespData) String() string {
 	return fmt.Sprintf("ExamListRespData(%+v)", *p)
 }
 
+// ClassKnowledgeCorrectPer
+type ClassKnowledgeCorrectPerRes struct {
+	ClassID string `thrift:"classID,1" json:"classID" query:"classID"`
+}
+
+func NewClassKnowledgeCorrectPerRes() *ClassKnowledgeCorrectPerRes {
+	return &ClassKnowledgeCorrectPerRes{}
+}
+
+func (p *ClassKnowledgeCorrectPerRes) GetClassID() (v string) {
+	return p.ClassID
+}
+
+var fieldIDToName_ClassKnowledgeCorrectPerRes = map[int16]string{
+	1: "classID",
+}
+
+func (p *ClassKnowledgeCorrectPerRes) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_ClassKnowledgeCorrectPerRes[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *ClassKnowledgeCorrectPerRes) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.ClassID = v
+	}
+	return nil
+}
+
+func (p *ClassKnowledgeCorrectPerRes) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("ClassKnowledgeCorrectPerRes"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *ClassKnowledgeCorrectPerRes) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("classID", thrift.STRING, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.ClassID); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *ClassKnowledgeCorrectPerRes) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ClassKnowledgeCorrectPerRes(%+v)", *p)
+}
+
+type ClassKnowledgeAccuracyPerResp struct {
+	Code     int32                     `thrift:"code,1" form:"code" json:"code" query:"code"`
+	Info     string                    `thrift:"info,2" form:"info" json:"info" query:"info"`
+	ClassID  string                    `thrift:"classID,3" form:"classID" json:"classID" query:"classID"`
+	Accuracy []*KnowledgePointAccuracy `thrift:"accuracy,4" form:"accuracy" json:"accuracy" query:"accuracy"`
+}
+
+func NewClassKnowledgeAccuracyPerResp() *ClassKnowledgeAccuracyPerResp {
+	return &ClassKnowledgeAccuracyPerResp{}
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) GetCode() (v int32) {
+	return p.Code
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) GetInfo() (v string) {
+	return p.Info
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) GetClassID() (v string) {
+	return p.ClassID
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) GetAccuracy() (v []*KnowledgePointAccuracy) {
+	return p.Accuracy
+}
+
+var fieldIDToName_ClassKnowledgeAccuracyPerResp = map[int16]string{
+	1: "code",
+	2: "info",
+	3: "classID",
+	4: "accuracy",
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I32 {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 4:
+			if fieldTypeId == thrift.LIST {
+				if err = p.ReadField4(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_ClassKnowledgeAccuracyPerResp[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return err
+	} else {
+		p.Code = v
+	}
+	return nil
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Info = v
+	}
+	return nil
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.ClassID = v
+	}
+	return nil
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) ReadField4(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return err
+	}
+	p.Accuracy = make([]*KnowledgePointAccuracy, 0, size)
+	for i := 0; i < size; i++ {
+		_elem := NewKnowledgePointAccuracy()
+		if err := _elem.Read(iprot); err != nil {
+			return err
+		}
+
+		p.Accuracy = append(p.Accuracy, _elem)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("ClassKnowledgeAccuracyPerResp"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField3(oprot); err != nil {
+			fieldId = 3
+			goto WriteFieldError
+		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("code", thrift.I32, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI32(p.Code); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("info", thrift.STRING, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Info); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) writeField3(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("classID", thrift.STRING, 3); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.ClassID); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("accuracy", thrift.LIST, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Accuracy)); err != nil {
+		return err
+	}
+	for _, v := range p.Accuracy {
+		if err := v.Write(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteListEnd(); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
+}
+
+func (p *ClassKnowledgeAccuracyPerResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ClassKnowledgeAccuracyPerResp(%+v)", *p)
+}
+
 type DemoServer interface {
 	TreeStructure(ctx context.Context, res *TreeStructureRes) (r *TreeStructureResp, err error)
 
@@ -2381,6 +2859,8 @@ type DemoServer interface {
 	AllStuInformation(ctx context.Context, res *AllStuInfoRes) (r *AllStuInfoResp, err error)
 
 	ExamList(ctx context.Context, res *ExamListRes) (r *ExamListResp, err error)
+
+	ClassKnowledgeCorrectPer(ctx context.Context, res *ClassKnowledgeCorrectPerRes) (r *ClassKnowledgeAccuracyPerResp, err error)
 }
 
 type DemoServerClient struct {
@@ -2445,6 +2925,15 @@ func (p *DemoServerClient) ExamList(ctx context.Context, res *ExamListRes) (r *E
 	}
 	return _result.GetSuccess(), nil
 }
+func (p *DemoServerClient) ClassKnowledgeCorrectPer(ctx context.Context, res *ClassKnowledgeCorrectPerRes) (r *ClassKnowledgeAccuracyPerResp, err error) {
+	var _args DemoServerClassKnowledgeCorrectPerArgs
+	_args.Res = res
+	var _result DemoServerClassKnowledgeCorrectPerResult
+	if err = p.Client_().Call(ctx, "ClassKnowledgeCorrectPer", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
 
 type DemoServerProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
@@ -2470,6 +2959,7 @@ func NewDemoServerProcessor(handler DemoServer) *DemoServerProcessor {
 	self.AddToProcessorMap("StuInformation", &demoServerProcessorStuInformation{handler: handler})
 	self.AddToProcessorMap("AllStuInformation", &demoServerProcessorAllStuInformation{handler: handler})
 	self.AddToProcessorMap("ExamList", &demoServerProcessorExamList{handler: handler})
+	self.AddToProcessorMap("ClassKnowledgeCorrectPer", &demoServerProcessorClassKnowledgeCorrectPer{handler: handler})
 	return self
 }
 func (p *DemoServerProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -2665,6 +3155,54 @@ func (p *demoServerProcessorExamList) Process(ctx context.Context, seqId int32, 
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("ExamList", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type demoServerProcessorClassKnowledgeCorrectPer struct {
+	handler DemoServer
+}
+
+func (p *demoServerProcessorClassKnowledgeCorrectPer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := DemoServerClassKnowledgeCorrectPerArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("ClassKnowledgeCorrectPer", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	var err2 error
+	result := DemoServerClassKnowledgeCorrectPerResult{}
+	var retval *ClassKnowledgeAccuracyPerResp
+	if retval, err2 = p.handler.ClassKnowledgeCorrectPer(ctx, args.Res); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ClassKnowledgeCorrectPer: "+err2.Error())
+		oprot.WriteMessageBegin("ClassKnowledgeCorrectPer", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("ClassKnowledgeCorrectPer", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -3848,4 +4386,296 @@ func (p *DemoServerExamListResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("DemoServerExamListResult(%+v)", *p)
+}
+
+type DemoServerClassKnowledgeCorrectPerArgs struct {
+	Res *ClassKnowledgeCorrectPerRes `thrift:"res,1"`
+}
+
+func NewDemoServerClassKnowledgeCorrectPerArgs() *DemoServerClassKnowledgeCorrectPerArgs {
+	return &DemoServerClassKnowledgeCorrectPerArgs{}
+}
+
+var DemoServerClassKnowledgeCorrectPerArgs_Res_DEFAULT *ClassKnowledgeCorrectPerRes
+
+func (p *DemoServerClassKnowledgeCorrectPerArgs) GetRes() (v *ClassKnowledgeCorrectPerRes) {
+	if !p.IsSetRes() {
+		return DemoServerClassKnowledgeCorrectPerArgs_Res_DEFAULT
+	}
+	return p.Res
+}
+
+var fieldIDToName_DemoServerClassKnowledgeCorrectPerArgs = map[int16]string{
+	1: "res",
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerArgs) IsSetRes() bool {
+	return p.Res != nil
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerArgs) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_DemoServerClassKnowledgeCorrectPerArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Res = NewClassKnowledgeCorrectPerRes()
+	if err := p.Res.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("ClassKnowledgeCorrectPer_args"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("res", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Res.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("DemoServerClassKnowledgeCorrectPerArgs(%+v)", *p)
+}
+
+type DemoServerClassKnowledgeCorrectPerResult struct {
+	Success *ClassKnowledgeAccuracyPerResp `thrift:"success,0,optional"`
+}
+
+func NewDemoServerClassKnowledgeCorrectPerResult() *DemoServerClassKnowledgeCorrectPerResult {
+	return &DemoServerClassKnowledgeCorrectPerResult{}
+}
+
+var DemoServerClassKnowledgeCorrectPerResult_Success_DEFAULT *ClassKnowledgeAccuracyPerResp
+
+func (p *DemoServerClassKnowledgeCorrectPerResult) GetSuccess() (v *ClassKnowledgeAccuracyPerResp) {
+	if !p.IsSetSuccess() {
+		return DemoServerClassKnowledgeCorrectPerResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+var fieldIDToName_DemoServerClassKnowledgeCorrectPerResult = map[int16]string{
+	0: "success",
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerResult) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField0(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_DemoServerClassKnowledgeCorrectPerResult[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = NewClassKnowledgeAccuracyPerResp()
+	if err := p.Success.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerResult) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("ClassKnowledgeCorrectPer_result"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField0(oprot); err != nil {
+			fieldId = 0
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 0 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
+}
+
+func (p *DemoServerClassKnowledgeCorrectPerResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("DemoServerClassKnowledgeCorrectPerResult(%+v)", *p)
 }

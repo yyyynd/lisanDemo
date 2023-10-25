@@ -35,3 +35,11 @@ func TestGetAllStudentAccuracyInfo(t *testing.T) {
 
 	fmt.Println(len(allAccuracy))
 }
+
+func TestGetClassKnowledgeAccuracyInfo(t *testing.T) {
+	accuracy, err := GetClassKnowledgeAccuracyInfo("1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(accuracy)
+}
