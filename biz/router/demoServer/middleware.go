@@ -35,3 +35,13 @@ func _classknowledgecorrectperMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func __llkowoledgecorrectrateMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func __llknowledgecorrectrateMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

@@ -78,10 +78,23 @@ struct ClassKnowledgeAccuracyPerResp {
     4: list<KnowledgePointAccuracy> accuracy;
 }
 
+// AllKowoledgeCorrectRate
+struct AllKnowledgeCorrectRateReq {
+
+}
+
+struct AllKnowledgeCorrectRateResp {
+    1: i32 code;
+    2: string info;
+    3: list<KnowledgePointAccuracy> accuracy;
+}
+
+
 service DemoServer {
     TreeStructureResp  TreeStructure (TreeStructureRes res)(api.get="/treeStructure");
     StuInfoResp StuInformation (StuInfoRes res)(api.get="/stuInformation");
     AllStuInfoResp AllStuInformation (AllStuInfoRes res)(api.get="/allStuInfo");
     ExamListResp ExamList (ExamListRes res)(api.get="/examList");
     ClassKnowledgeAccuracyPerResp ClassKnowledgeCorrectPer(ClassKnowledgeCorrectPerRes res)(api.get="/classKnowledgeCorrectPer")
+    AllKnowledgeCorrectRateResp AllKnowledgeCorrectRate(AllKnowledgeCorrectRateReq req)(api.get="/allKowoledgeCorrectRate")
 }

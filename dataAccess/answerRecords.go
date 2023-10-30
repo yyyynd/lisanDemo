@@ -177,3 +177,57 @@ func getClassKnowledgeAccuracyInfo(classID string) ([]*demoServer.KnowledgePoint
 
 	return accuracyData, nil
 }
+
+func GetAllKnowledgeCorrectRate() ([]*demoServer.KnowledgePointAccuracy, error) {
+	if accuracyData, err := getAllKnowledgeCorrectRate(); err != nil {
+		return nil, err
+	} else {
+		return accuracyData, nil
+	}
+}
+
+func getAllKnowledgeCorrectRate() ([]*demoServer.KnowledgePointAccuracy, error) {
+	db, err := InitConnection(USER, PASSWD, "", "lisandb")
+	if err != nil {
+		return nil, err
+	}
+
+	//get accuracy data
+	accuracy := make([]accuracyInfoData, 0)
+	//collect each knowledge
+
+	subQueryB := db.Table("answer_records AS a").
+		Select("b.kp_id, SUM(IF(a.is_correct = 1, 1, 0))/COUNT(*) AS accuracy").
+		Joins("INNER JOIN question_knowledge_points_rel AS b ON a.q_id = b.q_id").
+		Group("b.kp_id")
+
+	db.Table("knowledge_points_info AS c").
+		Select("c.kp_id, c.kp_content, d.accuracy").
+		Joins("INNER JOIN (?) AS d ON c.kp_id = d.kp_id", subQueryB).Find(&accuracy)
+
+	/**
+	SELECT c.kp_id, c.kp_content, d.accuracy
+	FROM lisandb.knowledge_points_info AS c INNER JOIN
+		(SELECT b.kp_id, SUM(IF(a.is_correct = 1, 1, 0))/COUNT(*) AS accuracy
+		FROM lisandb.answer_records AS a INNER JOIN lisandb.question_knowledge_points_rel AS b
+		ON a.q_id = b.q_id
+		GROUP BY b.kp_id) AS d ON c.kp_id = d.kp_id
+	;
+	*/
+
+	if db.Error != nil {
+		return nil, db.Error
+	}
+
+	//create resp body
+	accuracyData := make([]*demoServer.KnowledgePointAccuracy, len(accuracy))
+	for i := 0; i < len(accuracy); i++ {
+		tmp := demoServer.NewKnowledgePointAccuracy()
+		tmp.Kid = accuracy[i].KpId
+		tmp.KpContent = accuracy[i].KpContent
+		tmp.Accuracy = accuracy[i].Accuracy
+		accuracyData[i] = tmp
+	}
+
+	return accuracyData, nil
+}

@@ -17,6 +17,7 @@ import (
 func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
+	root.GET("/allKowoledgeCorrectRate", append(__llknowledgecorrectrateMw(), demoServer.AllKnowledgeCorrectRate)...)
 	root.GET("/allStuInfo", append(__llstuinformationMw(), demoServer.AllStuInformation)...)
 	root.GET("/classKnowledgeCorrectPer", append(_classknowledgecorrectperMw(), demoServer.ClassKnowledgeCorrectPer)...)
 	root.GET("/examList", append(_examlistMw(), demoServer.ExamList)...)

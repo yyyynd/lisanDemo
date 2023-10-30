@@ -138,3 +138,27 @@ func ClassKnowledgeCorrectPer(ctx context.Context, c *app.RequestContext) {
 	resp.Info = "success"
 	c.JSON(consts.StatusOK, resp)
 }
+
+// AllKnowledgeCorrectRate .
+// @router /allKowoledgeCorrectRate [GET]
+func AllKnowledgeCorrectRate(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req demoServer.AllKnowledgeCorrectRateReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(demoServer.AllKnowledgeCorrectRateResp)
+	resp.Accuracy, err = dataAccess.GetAllKnowledgeCorrectRate()
+	if err != nil {
+		resp.Code = 1
+		resp.Info = err.Error()
+		c.JSON(consts.StatusInternalServerError, resp)
+
+	}
+	resp.Code = 0
+	resp.Info = "success"
+	c.JSON(consts.StatusOK, resp)
+}

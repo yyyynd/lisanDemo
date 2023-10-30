@@ -43,3 +43,11 @@ func TestGetClassKnowledgeAccuracyInfo(t *testing.T) {
 	}
 	fmt.Println(accuracy)
 }
+
+func TestGetAllKnowledgeCorrectRate(t *testing.T) {
+	accuracy, err := GetAllKnowledgeCorrectRate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(accuracy)
+}
